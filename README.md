@@ -1,0 +1,1 @@
+This branch provides support for automated builds, so be careful when modifying it.
