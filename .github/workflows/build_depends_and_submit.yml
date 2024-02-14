@@ -1,0 +1,75 @@
+name: Build Depends and Submit
+
+
+
+on:
+  schedule:
+    - cron: '00 00/12 * * *'
+  workflow_dispatch: {}
+
+
+
+jobs:
+  Runner:
+    runs-on: macos-latest
+    steps:
+    
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        ref: 'main'
+        path: 'ToolDelta'
+
+    - name: Checkout Code From Local Repository
+      uses: actions/checkout@v4
+      with:
+        ref: 'ci_cd_auto_build_depends'
+        path: 'ci_cd_auto_build_depends'
+
+    - name: Checkout Code From Remote Repository
+      uses: actions/checkout@v4
+      with:
+        repository: 'bouldev/neo-omega-kernel'
+        path: 'neomega_kernel'
+
+    - name: Set Up Go
+      uses: actions/setup-go@v2
+    
+    - name: Configure Raknet
+      run: |
+        go mod init configure_raknet_depends
+        go get github.com/sandertv/go-raknet@v1.12.0
+        sudo sed -i "" "s/urrentProtocol byte = 11/urrentProtocol byte = 8/g" /Users/runner/go/pkg/mod/github.com/sandertv/go-raknet@v1.12.0/conn.go
+
+    - name: Configure Makefile
+      run: mv ci_cd_auto_build_depends/Makefile neomega_kernel/neomega/c_api
+    
+    - name: Clean Up and Change Path
+      run: |
+        rm -rf ci_cd_auto_build_depends
+        cd neomega_kernel/neomega/c_api
+
+    - name: Install Dependencies
+      run: |
+        brew install mingw-w64
+        brew install messense/macos-cross-toolchains/x86_64-unknown-linux-gnu
+        brew install messense/macos-cross-toolchains/aarch64-unknown-linux-gnu
+        brew install android-ndk
+        brew install make
+
+    - name: Build Depends
+      run: |
+        make all
+        rm -rf libs/*.h
+    
+    - name: Move Binary Files and Change Path
+      run: |
+        mv * ../../../ToolDelta
+        cd ../../../ToolDelta
+
+    - name: Submit Changes
+      uses: EndBug/add-and-commit@v9
+      with:
+        default_author: github_actions
+        message: '[AUTO] build depends and submit'
+        push: '-f' # 要求暴力推送
