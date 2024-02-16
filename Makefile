@@ -13,7 +13,7 @@ ifeq ($(CGO_ENABLED),1)
 	# brew install messense/macos-cross-toolchains/aarch64-unknown-linux-gnu
 	LINUX_ARM64_CC:=$(shell if [ -z ${LINUX_ARM64_CC} ]; then echo /usr/local/bin/aarch64-unknown-linux-gnu-gcc; else echo ${LINUX_ARM64_CC}; fi)    
 	# brew install android-ndk
-	ANDROID_ARM64_CC:=$(shell if [ -z ${ANDROID_ARM64_CC} ]; then echo /usr/local/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang; else echo ${ANDROID_ARM64_CC}; fi)    
+	ANDROID_ARM64_CC:=$(shell if [ -z ${ANDROID_ARM64_CC} ]; then echo ${HOME}/android-ndk-r20b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi16-clang; else echo ${ANDROID_ARM64_CC}; fi)    
 endif 
 # end c/c++ toolchain
 
