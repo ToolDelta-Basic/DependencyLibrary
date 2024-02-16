@@ -3,18 +3,18 @@ CGO_ENABLED:=1
 # if CGO_ENABLED then set c/c++ compilers
 ifeq ($(CGO_ENABLED),1)
 	# get cc from env or use default
-	MACOS_AMD64_CC:=$(shell if [ -z ${MACOS_AMD64_CC} ]; then echo /usr/bin/clang; else echo ${MACOS_AMD64_CC}; fi) 
-	MACOS_ARM64_CC:=$(shell if [ -z ${MACOS_ARM64_CC} ]; then echo /usr/bin/clang; else echo ${MACOS_ARM64_CC}; fi) 
+	MACOS_AMD64_CC:=$(shell if [ -z ${MACOS_AMD64_CC} ]; then echo /usr/bin/clang; else echo ${MACOS_AMD64_CC}; fi)
+	MACOS_ARM64_CC:=$(shell if [ -z ${MACOS_ARM64_CC} ]; then echo /usr/bin/clang; else echo ${MACOS_ARM64_CC}; fi)
 	# brew install mingw-w64
-	WINDOWS_AMD64_CC:=$(shell if [ -z ${WINDOWS_AMD64_CC} ]; then echo /usr/local/bin/x86_64-w64-mingw32-gcc; else echo ${WINDOWS_AMD64_CC}; fi)  
-	WINDOWS_X86_CC:=$(shell if [ -z ${WINDOWS_X86_CC} ]; then echo /usr/local/bin/i686-w64-mingw32-gcc; else echo ${WINDOWS_X86_CC}; fi)   
+	WINDOWS_AMD64_CC:=$(shell if [ -z ${WINDOWS_AMD64_CC} ]; then echo /usr/local/bin/x86_64-w64-mingw32-gcc; else echo ${WINDOWS_AMD64_CC}; fi)
+	WINDOWS_X86_CC:=$(shell if [ -z ${WINDOWS_X86_CC} ]; then echo /usr/local/bin/i686-w64-mingw32-gcc; else echo ${WINDOWS_X86_CC}; fi)
 	# brew install messense/macos-cross-toolchains/x86_64-unknown-linux-gnu
-	LINUX_AMD64_CC:=$(shell if [ -z ${LINUX_AMD64_CC} ]; then echo /usr/local/bin/x86_64-unknown-linux-gnu-gcc; else echo ${LINUX_AMD64_CC}; fi) 
+	LINUX_AMD64_CC:=$(shell if [ -z ${LINUX_AMD64_CC} ]; then echo /usr/local/bin/x86_64-unknown-linux-gnu-gcc; else echo ${LINUX_AMD64_CC}; fi)
 	# brew install messense/macos-cross-toolchains/aarch64-unknown-linux-gnu
-	LINUX_ARM64_CC:=$(shell if [ -z ${LINUX_ARM64_CC} ]; then echo /usr/local/bin/aarch64-unknown-linux-gnu-gcc; else echo ${LINUX_ARM64_CC}; fi)    
+	LINUX_ARM64_CC:=$(shell if [ -z ${LINUX_ARM64_CC} ]; then echo /usr/local/bin/aarch64-unknown-linux-gnu-gcc; else echo ${LINUX_ARM64_CC}; fi)
 	# brew install android-ndk
-	ANDROID_ARM64_CC:=$(shell if [ -z ${ANDROID_ARM64_CC} ]; then echo ${HOME}/android-ndk-r20b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi16-clang; else echo ${ANDROID_ARM64_CC}; fi)    
-endif 
+	ANDROID_ARM64_CC:=$(shell if [ -z ${ANDROID_ARM64_CC} ]; then echo ${HOME}/android-ndk-r20b/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang; else echo ${ANDROID_ARM64_CC}; fi)
+endif
 # end c/c++ toolchain
 
 # define go build flags
@@ -83,7 +83,7 @@ LIBS:=${LIBS} ${${TYPE}_LIB}
 ${OUTPUT_DIR}:
 	@echo make output dir $@
 	@mkdir -p $@
-	
+
 
 .PHONY: ${LIBS}
 ${LIBS}: ${OUTPUT_DIR}/${EXEC_PREFIX}%: ${OUTPUT_DIR} ${SRCS_GO}
@@ -92,8 +92,8 @@ ${LIBS}: ${OUTPUT_DIR}/${EXEC_PREFIX}%: ${OUTPUT_DIR} ${SRCS_GO}
 
 all: ${LIBS}
 
-# upload: 
-# 	mv ./binary/fastbuilder-windows.exe.hash ./binary/fastbuilder-windows.hash 
+# upload:
+# 	mv ./binary/fastbuilder-windows.exe.hash ./binary/fastbuilder-windows.hash
 # 	scp -r ./binary/* FBOmega:/var/www/omega/binary/
 # 	omega_release/file_uploader/main -d ./binary -s binary/ -c omega_release/file_uploader/config.json
 # 	mv ./binary/fastbuilder-windows.hash ./binary/fastbuilder-windows.exe.hash
