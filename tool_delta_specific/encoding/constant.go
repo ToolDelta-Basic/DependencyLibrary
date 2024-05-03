@@ -5,7 +5,7 @@ package encoding
 const (
 	MaxLenString = 65535      // 单个字符串的最大长度上限
 	MaxLenSlice  = 4294967295 // 单个切片的最大长度上限
-	MapLenMap    = 65535      // 单个映射的最大长度上限
+	MaxLenMap    = 65535      // 单个映射的最大长度上限
 )
 
 // 描述长度固定的数据的长度
