@@ -27,18 +27,20 @@ func (w *Writer) String(x *string) error {
 
 // 向写入者写入布尔值 x
 func (w *Writer) Bool(x *bool) error {
-	if *x {
-		err := w.WriteBytes([]byte{1})
-		if err != nil {
-			return fmt.Errorf("(w *Writer) Bool: %v", err)
-		}
-	} else {
-		err := w.WriteBytes([]byte{0})
-		if err != nil {
-			return fmt.Errorf("(w *Writer) Bool: %v", err)
-		}
+	var err error
+	// prepare
+	switch *x {
+	case false:
+		err = w.WriteBytes([]byte{0})
+	default:
+		err = w.WriteBytes([]byte{1})
+	}
+	// write bool
+	if err != nil {
+		return fmt.Errorf("(w *Writer) Bool: %v", err)
 	}
 	return nil
+	// return
 }
 
 // 向写入者写入 x(uint8)

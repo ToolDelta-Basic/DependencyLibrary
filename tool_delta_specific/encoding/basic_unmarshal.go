@@ -29,15 +29,18 @@ func (r *Reader) Bool(x *bool) error {
 	if err != nil {
 		return fmt.Errorf("(r *Reader) Bool: %v", err)
 	}
+	// read one byte
 	switch ans[0] {
 	case 0:
 		*x = false
 	case 1:
 		*x = true
-	case 2:
-		return fmt.Errorf("(r *Reader) Bool: Unexpected value %#v was find", ans)
+	default:
+		return fmt.Errorf("(r *Reader) Bool: Unexpected value %d was find", ans[0])
 	}
+	// set data
 	return nil
+	// return
 }
 
 // 从阅读器阅读一个 uint8 并返回到 x 上
