@@ -17,7 +17,7 @@ type GetBuffer interface {
 
 // 指代在 *T 上实现了基于 IO 操作流的 解码/编码 接口
 type Marshal[T any] interface {
-	Marshal(operator IO) error
+	Marshal(operator IO)
 	*T
 }
 
@@ -29,14 +29,14 @@ type Marshal[T any] interface {
 // 当传入 encoding.Reader 时，数据将从 encoding.Reader 解码至 x ；
 // 当传入 encoding.Writer 时，x 将被编码至 encoding.Writer
 type AutoMarshal interface {
-	String(x *string) error
-	Bool(x *bool) error
-	Uint8(x *uint8) error
-	Int8(x *int8) error
-	Uint16(x *uint16) error
-	Int16(x *int16) error
-	Uint32(x *uint32) error
-	Int32(x *int32) error
-	Uint64(x *uint64) error
-	Int64(x *int64) error
+	String(x *string)
+	Bool(x *bool)
+	Uint8(x *uint8)
+	Int8(x *int8)
+	Uint16(x *uint16)
+	Int16(x *int16)
+	Uint32(x *uint32)
+	Int32(x *int32)
+	Uint64(x *uint64)
+	Int64(x *int64)
 }

@@ -9,10 +9,10 @@ func Slice[
 	T any,
 	S ~*[]T,
 	M Marshal[T],
-](operator IO, x S) error {
+](operator IO, x S) {
 	len := len(*x)
 	if len > MaxLenSlice {
-		return fmt.Errorf("Slice: The length of the target slice is out of the max limited %d; len = %d", MaxLenSlice, len)
+		panic(fmt.Sprintf("Slice: The length of the target slice is out of the max limited %d; len = %d", MaxLenSlice, len))
 	}
 	// pre check
 	length := uint32(len)
@@ -24,14 +24,9 @@ func Slice[
 	}
 	// make slice if meet read mode
 	for i := uint32(0); i < length; i++ {
-		err := M(&(*x)[i]).Marshal(operator)
-		if err != nil {
-			return fmt.Errorf("Slice: %v", err)
-		}
+		M(&(*x)[i]).Marshal(operator)
 	}
 	// marshal or unmarshal data included
-	return nil
-	// return
 }
 
 // 从切片 x(~[]T) 读取或向切片 x(~[]T) 写入数据，
@@ -44,11 +39,11 @@ func Slice[
 // 因此此函数被认为广泛在基本数据类型的切片上使用
 func SliceByFunc[T any, S ~*[]T](
 	operator IO, x S,
-	marshal_func func(x *T) error,
-) error {
+	marshal_func func(x *T),
+) {
 	len := len(*x)
 	if len > MaxLenSlice {
-		return fmt.Errorf("SliceByFunc: The length of the target slice is out of the max limited %d; len = %d", MaxLenSlice, len)
+		panic(fmt.Sprintf("SliceByFunc: The length of the target slice is out of the max limited %d; len = %d", MaxLenSlice, len))
 	}
 	// pre check
 	length := uint32(len)
@@ -60,14 +55,9 @@ func SliceByFunc[T any, S ~*[]T](
 	}
 	// make slice if meet read mode
 	for i := uint32(0); i < length; i++ {
-		err := marshal_func(&(*x)[i])
-		if err != nil {
-			return fmt.Errorf("SliceByFunc: %v", err)
-		}
+		marshal_func(&(*x)[i])
 	}
 	// marshal or unmarshal data included
-	return nil
-	// return
 }
 
 /*
@@ -85,11 +75,11 @@ key_marshal_func 与 M 的不同之处在于，
 */
 func Map[K comparable, V any, M Marshal[V]](
 	operator IO, x *map[K]V,
-	key_marshal_func func(x *K) error,
-) error {
+	key_marshal_func func(x *K),
+) {
 	len := len(*x)
 	if len > MaxLenMap {
-		return fmt.Errorf("Map: The length of the target map is out of the max limited %d; len = %d", MaxLenSlice, len)
+		panic(fmt.Sprintf("Map: The length of the target map is out of the max limited %d; len = %d", MaxLenSlice, len))
 	}
 	// pre check
 	length := uint16(len)
@@ -98,16 +88,8 @@ func Map[K comparable, V any, M Marshal[V]](
 	switch operator.(type) {
 	case *Writer:
 		for key, value := range *x {
-			err := key_marshal_func(&key)
-			if err != nil {
-				return fmt.Errorf("Map: %v", err)
-			}
-			// write key
-			err = M(&value).Marshal(operator)
-			if err != nil {
-				return fmt.Errorf("Map: %v", err)
-			}
-			// write value
+			key_marshal_func(&key)
+			M(&value).Marshal(operator)
 		}
 		// write data
 	case *Reader:
@@ -115,25 +97,17 @@ func Map[K comparable, V any, M Marshal[V]](
 		// make map
 		for i := uint16(0); i < length; i++ {
 			var key K
-			err := key_marshal_func(&key)
-			if err != nil {
-				return fmt.Errorf("Map: %v", err)
-			}
-			// read key
 			var value V
-			err = M(&value).Marshal(operator)
-			if err != nil {
-				return fmt.Errorf("Map: %v", err)
-			}
-			// read value
+			// prepare
+			key_marshal_func(&key)
+			M(&value).Marshal(operator)
+			// read key and data
 			(*x)[key] = value
-			// sync data
+			// set data
 		}
 		// read data
 	}
 	// write or read data
-	return nil
-	// return
 }
 
 /*
@@ -150,12 +124,12 @@ IO 操作流而实现函数。前者被用于映射中键的 解码/编码 ，
 */
 func MapByFunc[K comparable, V any](
 	operator IO, x *map[K]V,
-	key_marshal_func func(x *K) error,
-	value_marshal_func func(x *V) error,
-) error {
+	key_marshal_func func(x *K),
+	value_marshal_func func(x *V),
+) {
 	len := len(*x)
 	if len > MaxLenMap {
-		return fmt.Errorf("MapByFunc: The length of the target map is out of the max limited %d; len = %d", MaxLenSlice, len)
+		panic(fmt.Sprintf("MapByFunc: The length of the target map is out of the max limited %d; len = %d", MaxLenSlice, len))
 	}
 	// pre check
 	length := uint16(len)
@@ -164,16 +138,8 @@ func MapByFunc[K comparable, V any](
 	switch operator.(type) {
 	case *Writer:
 		for key, value := range *x {
-			err := key_marshal_func(&key)
-			if err != nil {
-				return fmt.Errorf("MapByFunc: %v", err)
-			}
-			// write key
-			err = value_marshal_func(&value)
-			if err != nil {
-				return fmt.Errorf("MapByFunc: %v", err)
-			}
-			// write value
+			key_marshal_func(&key)
+			value_marshal_func(&value)
 		}
 		// write data
 	case *Reader:
@@ -181,23 +147,15 @@ func MapByFunc[K comparable, V any](
 		// make map
 		for i := uint16(0); i < length; i++ {
 			var key K
-			err := key_marshal_func(&key)
-			if err != nil {
-				return fmt.Errorf("MapByFunc: %v", err)
-			}
-			// read key
 			var value V
-			err = value_marshal_func(&value)
-			if err != nil {
-				return fmt.Errorf("MapByFunc: %v", err)
-			}
-			// read value
+			// prepare
+			key_marshal_func(&key)
+			value_marshal_func(&value)
+			// read key and data
 			(*x)[key] = value
-			// sync data
+			// set data
 		}
 		// read data
 	}
 	// write or read data
-	return nil
-	// return
 }
