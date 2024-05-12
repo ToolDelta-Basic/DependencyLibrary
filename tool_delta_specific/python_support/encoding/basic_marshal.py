@@ -1,5 +1,5 @@
 from .const import *
-from .define import String
+from .go_type import String
 from io import BytesIO
 from struct import pack
 

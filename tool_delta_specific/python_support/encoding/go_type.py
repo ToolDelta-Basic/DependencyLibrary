@@ -90,7 +90,7 @@ class GoInt(GoType):
             not a int type.
         ValueError:
             The payload (integer) x that you want to place on the current
-            class is out of range。
+            class is out of range.
     """
 
     x: int = 0
