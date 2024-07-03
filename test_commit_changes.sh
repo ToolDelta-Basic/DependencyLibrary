@@ -1,5 +1,5 @@
 local_record=$(sed -n '1,1p' commit)
-remote_commit=$(sed -n '1,1p' neomega_kernel/.git/refs/remotes/origin/main)
+remote_commit=$(sed -n '1,1p' neomega_core/.git/refs/remotes/origin/main)
 # prepare
 if [ $local_record != $remote_commit ]; then
     echo "${remote_commit}" > commit
